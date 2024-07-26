@@ -20,7 +20,10 @@ func main() {
 
 	// Gin 路由设置
 	r := gin.Default()
+
 	routes.SetupRoutes(r, ch, q)
+
+	routes.SetupWsRoutes()
 
 	go func() {
 		msgs, err := ch.Consume(

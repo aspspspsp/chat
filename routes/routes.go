@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"gochat/handlers"
 	"gochat/rabbitmq"
 	"net/http"
 )
@@ -23,4 +24,9 @@ func publishHandler(ch *amqp.Channel, q amqp.Queue) gin.HandlerFunc {
 
 func SetupRoutes(r *gin.Engine, ch *amqp.Channel, q amqp.Queue) {
 	r.GET("/publish", publishHandler(ch, q))
+}
+
+func SetupWsRoutes() {
+	http.HandleFunc("/ws", handlers.HandleWebSocket)
+	http.ListenAndServe(":8080", nil)
 }

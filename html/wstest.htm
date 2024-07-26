@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <p>Open the browser console to see WebSocket messages.</p>
+    <script>
+        // Create a WebSocket connection
+        let socket = new WebSocket("ws://localhost:8080/ws");
+
+        // Event handler for when the connection is established
+        socket.onopen = function(e) {
+            console.log("[open] Connection established");
+
+            // Send an initial message
+            socket.send("Hello Server!");
+
+            // Automatically send messages every 5 seconds
+            setInterval(() => {
+                const message = "Hello Server, this is an automatic message!";
+                console.log(`[send] Sending message: ${message}`);
+                socket.send(message);
+            }, 5000); // 5000 milliseconds = 5 seconds
+        };
+
+        // Event handler for when a message is received from the server
+        socket.onmessage = function(event) {
+            console.log(`[message] Data received from server: ${event.data}`);
+        };
+
+        // Event handler for when the connection is closed
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                // e.g., server process killed or network down
+                console.error('[close] Connection died');
+            }
+        };
+
+        // Event handler for errors
+        socket.onerror = function(error) {
+            console.error(`[error] ${error.message}`);
+        };
+    </script>
+</body>
+</html>
