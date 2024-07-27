@@ -3,7 +3,9 @@ package main
 import (
 	"chat/rabbitmq"
 	"chat/routes"
+	"common/utils"
 	"github.com/gin-gonic/gin"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 )
 
@@ -15,8 +17,19 @@ func failOnError(err error, msg string) {
 
 func main() {
 	conn, ch, q := rabbitmq.ConnectRabbitMQ()
-	defer conn.Close()
-	defer ch.Close()
+	defer func(conn *amqp.Connection) {
+		err := conn.Close()
+		if err != nil {
+			utils.FailOnError(err, "member服務啟動失敗")
+		}
+	}(conn)
+
+	defer func(ch *amqp.Channel) {
+		err := ch.Close()
+		if err != nil {
+			utils.FailOnError(err, "member服務啟動失敗")
+		}
+	}(ch)
 
 	// Gin 路由设置
 	r := gin.Default()
@@ -50,5 +63,9 @@ func main() {
 	}()
 
 	// 启动 HTTP 服务
-	r.Run(":8080")
+	err := r.Run(":8080")
+	if err != nil {
+		utils.FailOnError(err, "member服務啟動失敗")
+		return
+	}
 }

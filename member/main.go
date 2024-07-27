@@ -1,18 +1,11 @@
 package main
 
 import (
-	"consul/utils"
+	"common/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"member/database"
 	"member/routes"
 )
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
 
 func main() {
 	// 初始化數據庫
@@ -24,8 +17,12 @@ func main() {
 
 	routes.SetupRoutes(r)
 
-	go utils.RegisterService("chat", "localhost", 50051)
+	go utils.RegisterService("member", "localhost", 50051)
 
 	// 启动 HTTP 服务
-	r.Run(":8080")
+	err := r.Run(":8080")
+	if err != nil {
+		utils.FailOnError(err, "member服務啟動失敗")
+		return
+	}
 }
