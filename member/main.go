@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	registration "member/consul"
 	"member/database"
 	"member/routes"
 )
@@ -22,6 +23,8 @@ func main() {
 	r := gin.Default()
 
 	routes.SetupRoutes(r)
+
+	go registration.RegisterService("greeter", "localhost", 50051)
 
 	// 启动 HTTP 服务
 	r.Run(":8080")
