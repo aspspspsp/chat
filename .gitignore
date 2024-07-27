@@ -1,5 +1,5 @@
 # Idea
-.idea
+/.idea
 
 # Go workspace file
 go.work

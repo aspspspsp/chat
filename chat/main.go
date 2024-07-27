@@ -1,9 +1,9 @@
 package main
 
 import (
+	"chat/rabbitmq"
+	"chat/routes"
 	"github.com/gin-gonic/gin"
-	"gochat/rabbitmq"
-	"gochat/routes"
 	"log"
 )
 

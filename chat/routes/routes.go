@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"chat/handlers"
+	"chat/rabbitmq"
 	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"gochat/handlers"
-	"gochat/rabbitmq"
 	"net/http"
 )
 
