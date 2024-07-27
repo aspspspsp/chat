@@ -1,8 +1,7 @@
 package main
 
 import (
-	"chat/config"
-	"chat/rabbitmq"
+	"chat/inits"
 	"chat/routes"
 	"common/utils"
 	"github.com/gin-gonic/gin"
@@ -12,10 +11,10 @@ import (
 
 func main() {
 	// db初始化
-	config.DbInit()
+	inits.DbInit()
 
 	// mq初始化
-	conn, ch, q := rabbitmq.ConnectRabbitMQ()
+	conn, ch, q := utils.ConnectRabbitMQ()
 	defer func(conn *amqp.Connection) {
 		err := conn.Close()
 		if err != nil {

@@ -1,4 +1,4 @@
-package config
+package inits
 
 import (
 	"chat/models"

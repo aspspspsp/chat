@@ -2,7 +2,7 @@ package routes
 
 import (
 	"chat/handlers"
-	"chat/rabbitmq"
+	"common/utils"
 	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"net/http"
@@ -12,7 +12,7 @@ func publishHandler(ch *amqp.Channel, q amqp.Queue) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		body := c.DefaultQuery("message", "Hello World")
 
-		err := rabbitmq.PublishMessage(ch, q, body)
+		err := utils.PublishMessage(ch, q, body)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to publish message: %s", err.Error())
 			return
