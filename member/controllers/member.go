@@ -8,18 +8,21 @@ import (
 )
 
 func CreateMember(c *gin.Context) {
-	var member models.Member
-	if err := c.ShouldBindJSON(&member); err != nil {
+	var user models.Member
+	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := database.DB.Create(&member).Error; err != nil {
+	// 使用雪花算法生成 ID
+	user.ID = database.Node.Generate()
+
+	if err := database.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, member)
+	c.JSON(http.StatusOK, user)
 }
 
 func GetMember(c *gin.Context) {

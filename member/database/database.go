@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/bwmarrin/snowflake"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"log"
 	"member/models"
@@ -10,16 +11,16 @@ import (
 
 var DB *gorm.DB
 var err error
-var _ *snowflake.Node
+var Node *snowflake.Node
 
 func Init() {
 	// 初始化雪花算法節點
-	_, err = snowflake.NewNode(1)
+	Node, err = snowflake.NewNode(1)
 	if err != nil {
 		log.Fatal("Failed to initialize snowflake node:", err)
 	}
 
-	DB, err = gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
+	DB, err = gorm.Open("mysql", "root:oh_my_ody!@tcp(127.0.0.1:13306)/chat?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal("Failed to connect to database")
@@ -31,6 +32,9 @@ func Init() {
 
 func Close() {
 	if DB != nil {
-		DB.Close()
+		err := DB.Close()
+		if err != nil {
+			return
+		}
 	}
 }
