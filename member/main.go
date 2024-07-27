@@ -7,18 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"log"
+	"member/handlers"
 	"member/inits"
 	"member/routes"
 	"time"
 )
-
-type server struct {
-	pb.UnimplementedGreeterServer
-}
-
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
-}
 
 func main() {
 	// 初始化數據庫
@@ -34,7 +27,7 @@ func main() {
 	// GRPC 註冊
 	registerServices := []utils.RegisterServiceFunc{
 		func(s *grpc.Server) {
-			pb.RegisterGreeterServer(s, &server{})
+			pb.RegisterGreeterServer(s, &handlers.Server{})
 		},
 	}
 	inits.GrpcInit(registerServices)
