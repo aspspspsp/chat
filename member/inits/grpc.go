@@ -5,5 +5,5 @@ import (
 )
 
 func GrpcInit(registerServices []utils.RegisterServiceFunc) {
-	go utils.StartGrpc(registerServices)
+	go utils.StartGrpc(50051, registerServices)
 }
