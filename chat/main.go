@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chat/config"
 	"chat/rabbitmq"
 	"chat/routes"
 	"common/utils"
@@ -9,18 +10,16 @@ import (
 	"log"
 )
 
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
-
 func main() {
+	// db初始化
+	config.DbInit()
+
+	// mq初始化
 	conn, ch, q := rabbitmq.ConnectRabbitMQ()
 	defer func(conn *amqp.Connection) {
 		err := conn.Close()
 		if err != nil {
-			utils.FailOnError(err, "member服務啟動失敗")
+			utils.FailOnError(err, "chat服務啟動失敗")
 		}
 	}(conn)
 
@@ -48,7 +47,7 @@ func main() {
 			false,  // no-wait
 			nil,    // args
 		)
-		failOnError(err, "Failed to register a consumer")
+		utils.FailOnError(err, "Failed to register a consumer")
 
 		forever := make(chan bool)
 

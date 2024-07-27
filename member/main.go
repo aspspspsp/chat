@@ -3,21 +3,20 @@ package main
 import (
 	"common/utils"
 	"github.com/gin-gonic/gin"
-	"member/database"
+	"member/config"
 	"member/routes"
 )
 
 func main() {
 	// 初始化數據庫
-	database.Init()
-	defer database.Close() // 確保在程序結束時關閉數據庫連接
+	config.DbInit()
 
 	// Gin 路由设置
 	r := gin.Default()
-
 	routes.SetupRoutes(r)
 
-	go utils.RegisterService("member", "localhost", 50051)
+	// 初始化consul
+	config.ConsulInit()
 
 	// 启动 HTTP 服务
 	err := r.Run(":8080")

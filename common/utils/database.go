@@ -1,4 +1,4 @@
-package database
+package utils
 
 import (
 	"fmt"
@@ -6,28 +6,27 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"log"
-	"member/models"
 )
 
 var DB *gorm.DB
 var err error
 var Node *snowflake.Node
 
-func Init() {
+func DbInit(dbUser string, dbPass string, dbUrl string, dbPort int, dbName string) {
 	// 初始化雪花算法節點
 	Node, err = snowflake.NewNode(1)
 	if err != nil {
 		log.Fatal("Failed to initialize snowflake node:", err)
 	}
 
-	DB, err = gorm.Open("mysql", "root:oh_my_ody!@tcp(127.0.0.1:13306)/chat?charset=utf8&parseTime=True&loc=Local")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", dbUser, dbPass, dbUrl, dbPort, dbName)
+
+	DB, err = gorm.Open("mysql", dsn)
+
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal("Failed to connect to database")
 	}
-
-	// 自動遷移
-	DB.AutoMigrate(&models.Member{})
 }
 
 func Close() {

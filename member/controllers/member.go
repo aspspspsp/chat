@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"common/utils"
 	"github.com/gin-gonic/gin"
-	"member/database"
 	"member/models"
 	"net/http"
 )
@@ -15,9 +15,9 @@ func CreateMember(c *gin.Context) {
 	}
 
 	// 使用雪花算法生成 ID
-	user.ID = database.Node.Generate()
+	user.ID = utils.Node.Generate()
 
-	if err := database.DB.Create(&user).Error; err != nil {
+	if err := utils.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -28,7 +28,7 @@ func CreateMember(c *gin.Context) {
 func GetMember(c *gin.Context) {
 	id := c.Param("id")
 	var member models.Member
-	if err := database.DB.First(&member, id).Error; err != nil {
+	if err := utils.DB.First(&member, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
 		return
 	}
@@ -39,7 +39,7 @@ func GetMember(c *gin.Context) {
 func UpdateMember(c *gin.Context) {
 	id := c.Param("id")
 	var member models.Member
-	if err := database.DB.First(&member, id).Error; err != nil {
+	if err := utils.DB.First(&member, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
 		return
 	}
@@ -49,18 +49,18 @@ func UpdateMember(c *gin.Context) {
 		return
 	}
 
-	database.DB.Save(&member)
+	utils.DB.Save(&member)
 	c.JSON(http.StatusOK, member)
 }
 
 func DeleteMember(c *gin.Context) {
 	id := c.Param("id")
 	var member models.Member
-	if err := database.DB.First(&member, id).Error; err != nil {
+	if err := utils.DB.First(&member, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
 		return
 	}
 
-	database.DB.Delete(&member)
+	utils.DB.Delete(&member)
 	c.JSON(http.StatusOK, gin.H{"message": "Member deleted"})
 }
