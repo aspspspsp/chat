@@ -7,7 +7,6 @@ import (
 	"common/repository/rpc"
 	"common/utils"
 	"context"
-	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"log"
 	"member/handlers"
@@ -25,8 +24,7 @@ func main() {
 	//defer db.Close() // 確保在程序結束時關閉數據庫連接
 
 	// Gin 路由设置
-	r := gin.Default()
-	routes.SetupRoutes(r)
+	r := routes.NewRouter()
 
 	// 註冊至服務發現
 	inits.ConsulInit()

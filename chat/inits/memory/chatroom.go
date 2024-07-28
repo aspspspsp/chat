@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"chat/memory"
+	"chat/repository/cache/memory"
 )
 
 func ChatroomLocalMemoryInit() {

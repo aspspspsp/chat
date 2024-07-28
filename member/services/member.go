@@ -5,6 +5,7 @@ import (
 	"common/consts"
 	"context"
 	"errors"
+	"github.com/CocaineCong/gin-mall/pkg/utils/jwt"
 	"log"
 	"member/repository/db/dao"
 	"member/repository/db/models"
@@ -26,7 +27,7 @@ func GetMemberSrv() *MemberSrv {
 }
 
 // Register 用户注册
-func (s *MemberSrv) Register(ctx context.Context, req *types.MemberRegisterReq) (resp interface{}, err error) {
+func (s *MemberSrv) Register(ctx context.Context, req *types.RegisterReq) (resp interface{}, err error) {
 	memberDao := dao.NewMemberDao(ctx)
 	_, exist, err := memberDao.IsExistsByUsername(req.Username)
 	if err != nil {
@@ -60,6 +61,45 @@ func (s *MemberSrv) Register(ctx context.Context, req *types.MemberRegisterReq) 
 	if err != nil {
 		log.Fatal(err)
 		return
+	}
+
+	return
+}
+
+// Login 用户登陆函数
+func (s *MemberSrv) Login(ctx context.Context, req *types.LoginReq) (resp interface{}, err error) {
+	var member *models.Member
+	memberDao := dao.NewMemberDao(ctx)
+	member, exist, err := memberDao.IsExistsByUsername(req.Username)
+	if !exist { // 如果查询不到，返回相应的错误
+		log.Fatal(err)
+		return nil, errors.New("用户不存在")
+	}
+
+	if !member.CheckPassword(req.Password) {
+		return nil, errors.New("账号/密码不正确")
+	}
+
+	accessToken, refreshToken, err := jwt.GenerateToken(member.ID, req.Username)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	memberInfoResp := &types.InfoResp{
+		ID:       member.ID,
+		Username: member.Username,
+		Nickname: member.Nickname,
+		Email:    member.Email,
+		Status:   member.Status,
+		Avatar:   member.AvatarURL(),
+		CreateAt: member.CreatedAt.Unix(),
+	}
+
+	resp = &types.TokenData{
+		Member:       memberInfoResp,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 
 	return
