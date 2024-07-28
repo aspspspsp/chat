@@ -1,9 +1,9 @@
 package inits
 
 import (
-	"common/utils"
+	"common/repository/rpc"
 )
 
-func GrpcInit(registerServices []utils.RegisterServiceFunc) {
-	go utils.StartGrpc(50051, registerServices)
+func GrpcInit(registerServices []rpc.RegisterServiceFunc) {
+	go rpc.InitGrpc(50051, registerServices)
 }

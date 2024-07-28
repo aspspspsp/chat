@@ -1,8 +1,9 @@
 package main
 
 import (
-	"chat/inits"
 	"chat/routes"
+	"common/repository/db"
+	"common/repository/mq"
 	"common/utils"
 	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -11,10 +12,10 @@ import (
 
 func main() {
 	// db初始化
-	inits.DbInit()
+	db.InitMySQL()
 
-	// mq初始化
-	conn, ch, q := utils.ConnectRabbitMQ()
+	// TODO 抽出來 mq初始化
+	conn, ch, q := mq.ConnectRabbitMQ()
 	defer func(conn *amqp.Connection) {
 		err := conn.Close()
 		if err != nil {
@@ -42,7 +43,7 @@ func main() {
 			"",     // consumer
 			true,   // auto-ack
 			false,  // exclusive
-			false,  // no-local
+			false,  // no-memory
 			false,  // no-wait
 			nil,    // args
 		)

@@ -1,66 +1,47 @@
 package controllers
 
-import (
-	"common/utils"
-	"github.com/gin-gonic/gin"
-	"member/models"
-	"net/http"
-)
-
-func CreateMember(c *gin.Context) {
-	var user models.Member
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// 使用雪花算法生成 ID
-	user.ID = utils.Node.Generate()
-
-	if err := utils.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, user)
-}
-
-func GetMember(c *gin.Context) {
-	id := c.Param("id")
-	var member models.Member
-	if err := utils.DB.First(&member, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, member)
-}
-
-func UpdateMember(c *gin.Context) {
-	id := c.Param("id")
-	var member models.Member
-	if err := utils.DB.First(&member, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
-		return
-	}
-
-	if err := c.ShouldBindJSON(&member); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	utils.DB.Save(&member)
-	c.JSON(http.StatusOK, member)
-}
-
-func DeleteMember(c *gin.Context) {
-	id := c.Param("id")
-	var member models.Member
-	if err := utils.DB.First(&member, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
-		return
-	}
-
-	utils.DB.Delete(&member)
-	c.JSON(http.StatusOK, gin.H{"message": "Member deleted"})
-}
+//
+//func Register(c *gin.Context) {
+//	var input struct {
+//		Username string `json:"username" binding:"required"`
+//		Password string `json:"password" binding:"required"`
+//	}
+//	if err := c.ShouldBindJSON(&input); err != nil {
+//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//		return
+//	}
+//
+//	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+//	member := models.Member{Username: input.Username, Password: string(hashedPassword)}
+//
+//	if result := db.DB.Create(&member); result.Error != nil {
+//		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, gin.H{"member": member})
+//}
+//
+//func Login(c *gin.Context) {
+//	var input struct {
+//		Username string `json:"username" binding:"required"`
+//		Password string `json:"password" binding:"required"`
+//	}
+//	if err := c.ShouldBindJSON(&input); err != nil {
+//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//		return
+//	}
+//
+//	var member models.Member
+//	if result := db.DB.Where("username = ?", input.Username).First(&member); result.Error != nil {
+//		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+//		return
+//	}
+//
+//	if err := bcrypt.CompareHashAndPassword([]byte(member.Password), []byte(input.Password)); err != nil {
+//		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, gin.H{"member": member})
+//}

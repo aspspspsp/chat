@@ -1,0 +1,23 @@
+system:
+  port: 8080
+  host: localhost
+  uploadModel: "local"
+
+mysql:
+  addr: 127.0.0.1
+  port: 13306
+  user: root
+  pass: oh_my_ody!
+  name: chat
+  charset: utf8mb4
+
+consul:
+  serviceName: greeter
+  serviceAddr: 127.0.0.1
+  servicePort: 50051
+
+redis:
+  addr: localhost
+  password: 123456
+  port: 6379
+  db: 0

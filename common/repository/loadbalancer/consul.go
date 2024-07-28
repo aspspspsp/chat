@@ -1,6 +1,7 @@
-package utils
+package loadbalancer
 
 import (
+	"common/configs"
 	"github.com/hashicorp/consul/api"
 	"log"
 )
@@ -9,19 +10,21 @@ import (
 服務註冊
 */
 
-func RegisterService(serviceName, serviceAddress string, servicePort int) {
+func InitConsul() {
 	config := api.DefaultConfig()
 	client, err := api.NewClient(config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	cConfig := configs.GetConfig().Consul
+
 	registration := &api.AgentServiceRegistration{
-		ID:      serviceName,
-		Name:    serviceName,
+		ID:      cConfig.ServiceName,
+		Name:    cConfig.ServiceName,
 		Tags:    []string{"q1mi", "hello"}, // 为服务打标签
-		Address: serviceAddress,
-		Port:    servicePort,
+		Address: cConfig.ServiceAddr,
+		Port:    cConfig.ServicePort,
 		// TODO: 健康檢查策略
 		//Check: &api.AgentServiceCheck{
 		//	GRPC:                           serviceAddress + ":" + string(rune(servicePort)),

@@ -1,4 +1,4 @@
-package utils
+package rpc
 
 import (
 	"context"
@@ -26,7 +26,7 @@ func DiscoverServiceWithConsul() (string, error) {
 	}
 
 	if len(services) == 0 {
-		return "", fmt.Errorf("no healthy instances of service found")
+		return "", fmt.Errorf("no healthy instances of services found")
 	}
 
 	service := services[0]
@@ -38,7 +38,7 @@ func DiscoverServiceWithConsul() (string, error) {
 	return fmt.Sprintf("%s:%d", address, port), nil
 }
 
-func StartGrpc(port int, registerServices []RegisterServiceFunc) {
+func InitGrpc(port int, registerServices []RegisterServiceFunc) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
