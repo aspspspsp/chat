@@ -5,5 +5,5 @@ import (
 )
 
 func ChatroomLocalMemoryInit() {
-	memory.NewChatroomMap()
+	memory.NewRoomMap()
 }

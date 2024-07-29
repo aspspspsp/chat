@@ -6,19 +6,22 @@ import (
 	conf "github.com/CocaineCong/gin-mall/config"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"time"
 )
 
 // Member 會員數據結構
 type Member struct {
 	gorm.Model
-	ID       uint   `json:"id" gorm:"primary_key"`
-	Username string `json:"username" gorm:"unique"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	Email    string `json:"email" gorm:"unique"`
-	Nickname string
-	Avatar   string `gorm:"size:1000"`
-	Status   string
+	ID        uint   `json:"id" gorm:"primary_key"`
+	Username  string `json:"username" gorm:"unique"`
+	Password  string `json:"password"`
+	Name      string `json:"name"`
+	Email     string `json:"email" gorm:"unique"`
+	Nickname  string
+	Avatar    string `gorm:"size:1000"`
+	Status    string
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 const (
