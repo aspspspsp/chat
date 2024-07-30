@@ -21,9 +21,9 @@ func main() {
 	message_store.InitMq(ctx)
 	message_broadcast.InitMq()
 
-	r := routes.NewRouter()
-
 	routes.SetupWsRoutes()
+
+	r := routes.NewRouter()
 
 	// 启动 HTTP 服务
 	err := r.Run(":8080")

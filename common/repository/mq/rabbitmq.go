@@ -6,6 +6,7 @@ import (
 )
 
 func ConnectRabbitMQ() *amqp.Connection {
+	// TODO: 使用連線池
 	// RabbitMQ 连接，使用正确的用户名和密码
 	conn, err := amqp.Dial("amqp://twg:123456@localhost:5672/")
 	utils.FailOnError(err, "Failed to connect to RabbitMQ")

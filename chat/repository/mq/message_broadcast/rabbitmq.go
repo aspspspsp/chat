@@ -1,6 +1,7 @@
 package message_broadcast
 
 import (
+	"chat/api/ws"
 	"chat/repository/db/models"
 	"chat/repository/mq/message_store"
 	"common/repository/mq"
@@ -17,6 +18,9 @@ var amqpChannel *amqp.Channel
 func InitMq() {
 	conn := mq.ConnectRabbitMQ()
 	amqpChannel = mq.CreateChannel(conn)
+	// TODO: 移到main方法
+	//defer conn.Close()
+	//defer ch.Close()
 
 	declareExchange()
 	q := declareQueue()
@@ -97,5 +101,8 @@ func handleMessages(msgs <-chan amqp.Delivery) {
 
 		// 消息解藕
 		message_store.PublishMessage(amqpChannel, message)
+
+		// 發到各個websocket
+		ws.BroadcastMessage(message)
 	}
 }

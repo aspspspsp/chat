@@ -17,8 +17,10 @@ func InitMq(ctx context.Context) {
 
 	conn := mq.ConnectRabbitMQ()
 	ch := mq.CreateChannel(conn)
+	// TODO: 移到main方法
 	//defer conn.Close()
 	//defer ch.Close()
+
 	declareQueue(ch)
 
 	msgs := consumeMessages(ch)

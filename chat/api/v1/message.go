@@ -30,3 +30,9 @@ func SendMessageHandler() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, resp))
 	}
 }
+
+func TestHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, "resp"))
+	}
+}
