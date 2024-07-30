@@ -2,6 +2,7 @@ package message_broadcast
 
 import (
 	"chat/repository/db/models"
+	"chat/repository/mq/message_store"
 	"common/repository/mq"
 	"common/utils"
 	"encoding/json"
@@ -10,6 +11,8 @@ import (
 )
 
 const messageExchangeName = "messageBroadcasting"
+
+var amqpChannel *amqp.Channel
 
 func InitMq() {
 	conn := mq.ConnectRabbitMQ()
@@ -93,5 +96,8 @@ func handleMessages(msgs <-chan amqp.Delivery) {
 			log.Fatalf("Error decoding JSON: %s", err)
 			continue // 跳过当前消息，继续处理下一个消息
 		}
+
+		// 消息解藕
+		message_store.PublishMessage(amqpChannel, message)
 	}
 }

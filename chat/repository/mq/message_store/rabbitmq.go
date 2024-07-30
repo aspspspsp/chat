@@ -39,15 +39,17 @@ func declareQueue(ch *amqp.Channel) amqp.Queue {
 	return q
 }
 
-func PublishMessage(ch *amqp.Channel, message string) {
-	err := ch.Publish(
+func PublishMessage(ch *amqp.Channel, message models.Message) {
+	body, err := json.Marshal(message)
+
+	err = ch.Publish(
 		"",        // exchange
 		queueName, // routing key
 		false,     // mandatory
 		false,     // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(message),
+			Body:        []byte(body),
 		})
 	utils.FailOnError(err, "Failed to publish a message")
 	log.Printf(" [x] Sent %s", message)
