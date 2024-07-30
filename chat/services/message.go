@@ -4,14 +4,12 @@ import (
 	"chat/repository/db/models"
 	"chat/repository/mq/message_broadcast"
 	"chat/types"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"sync"
 )
 
 var (
 	MessageSrvIns  *MessageSrv
 	MessageSrvOnce sync.Once
-	amqpChannel    *amqp.Channel
 )
 
 type MessageSrv struct {
@@ -33,7 +31,7 @@ func (s *MessageSrv) SendMessage(req *types.SendMessageReq) (resp interface{}, e
 		Content: content,
 	}
 
-	message_broadcast.PublishMessage(amqpChannel, message)
+	message_broadcast.PublishMessage(message)
 
 	return
 }

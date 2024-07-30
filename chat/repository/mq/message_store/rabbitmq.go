@@ -14,10 +14,11 @@ import (
 const queueName = "messageStore"
 
 func InitMq(ctx context.Context) {
+
 	conn := mq.ConnectRabbitMQ()
 	ch := mq.CreateChannel(conn)
-	defer conn.Close()
-	defer ch.Close()
+	//defer conn.Close()
+	//defer ch.Close()
 	declareQueue(ch)
 
 	msgs := consumeMessages(ch)
@@ -52,14 +53,14 @@ func PublishMessage(ch *amqp.Channel, message models.Message) {
 			Body:        []byte(body),
 		})
 	utils.FailOnError(err, "Failed to publish a message")
-	log.Printf(" [x] Sent %s", message)
+	log.Printf(" [x] Sent(非廣播) %s", message)
 }
 
 func consumeMessages(ch *amqp.Channel) <-chan amqp.Delivery {
 	msgs, err := ch.Consume(
 		queueName, // queue
 		"",        // consumer
-		true,      // auto-ack
+		false,     // auto-ack
 		false,     // exclusive
 		false,     // no-local
 		false,     // no-wait
@@ -75,17 +76,20 @@ func handleMessages(ctx context.Context, msgs <-chan amqp.Delivery, done chan bo
 
 	for d := range msgs {
 		body := d.Body
-		log.Printf("Received a message: %s", body)
+		log.Printf("Received a message(非廣播): %s", body)
 		var message models.Message
 		err := json.Unmarshal(body, &message)
 		if err != nil {
-			log.Fatalf("Error decoding JSON: %s", err)
+			log.Printf("Error decoding JSON: %s", err)
 			continue // 跳过当前消息，继续处理下一个消息
 		}
-
 		err = messageDao.Create(&message)
 		if err != nil {
-			log.Fatalf("Error decoding JSON: %s", err)
+			log.Printf("Error 存儲失敗: %s", err)
+			err := d.Nack(false, true)
+			if err != nil {
+				continue
+			} // 发送 Nack 并重新入队
 			continue // 跳过当前消息，继续处理下一个消息
 		}
 		d.Ack(false) // 手动确认消息

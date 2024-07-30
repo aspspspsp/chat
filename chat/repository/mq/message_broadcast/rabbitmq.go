@@ -16,20 +16,18 @@ var amqpChannel *amqp.Channel
 
 func InitMq() {
 	conn := mq.ConnectRabbitMQ()
-	ch := mq.CreateChannel(conn)
-	defer conn.Close()
-	defer ch.Close()
+	amqpChannel = mq.CreateChannel(conn)
 
-	declareExchange(ch)
-	q := declareQueue(ch)
-	mq.BindQueue(ch, q.Name, "", messageExchangeName)
-	msgs := consumeMessages(ch, q)
+	declareExchange()
+	q := declareQueue()
+	mq.BindQueue(amqpChannel, q.Name, "", messageExchangeName)
+	msgs := consumeMessages(q)
 
 	go handleMessages(msgs)
 }
 
-func declareExchange(ch *amqp.Channel) {
-	err := ch.ExchangeDeclare(
+func declareExchange() {
+	err := amqpChannel.ExchangeDeclare(
 		messageExchangeName, // 交换机名字
 		"fanout",            // 交换机类型，这里使用fanout类型，即: 发布订阅模式
 		true,                // 是否持久化
@@ -42,8 +40,8 @@ func declareExchange(ch *amqp.Channel) {
 	utils.FailOnError(err, "Failed to declare an exchange")
 }
 
-func declareQueue(ch *amqp.Channel) amqp.Queue {
-	q, err := ch.QueueDeclare(
+func declareQueue() amqp.Queue {
+	q, err := amqpChannel.QueueDeclare(
 		"",    // name
 		false, // durable
 		false, // delete when unused
@@ -56,10 +54,10 @@ func declareQueue(ch *amqp.Channel) amqp.Queue {
 }
 
 // PublishMessage 發送聊天消息
-func PublishMessage(ch *amqp.Channel, message models.Message) {
+func PublishMessage(message models.Message) {
 	body, err := json.Marshal(message)
 
-	err = ch.Publish(
+	err = amqpChannel.Publish(
 		messageExchangeName, // exchange
 		"",                  // routing key
 		false,               // mandatory
@@ -69,11 +67,11 @@ func PublishMessage(ch *amqp.Channel, message models.Message) {
 			Body:        []byte(body),
 		})
 	utils.FailOnError(err, "Failed to publish a message")
-	log.Printf(" [x] Sent %s", body)
+	log.Printf(" [x] Sent(廣播) %s", body)
 }
 
-func consumeMessages(ch *amqp.Channel, q amqp.Queue) <-chan amqp.Delivery {
-	msgs, err := ch.Consume(
+func consumeMessages(q amqp.Queue) <-chan amqp.Delivery {
+	msgs, err := amqpChannel.Consume(
 		q.Name, // queue
 		"",     // consumer
 		true,   // auto-ack
@@ -89,7 +87,7 @@ func consumeMessages(ch *amqp.Channel, q amqp.Queue) <-chan amqp.Delivery {
 func handleMessages(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		body := d.Body
-		log.Printf("Received a message: %s", body)
+		log.Printf("Received a message(廣播): %s", body)
 		var message models.Message
 		err := json.Unmarshal(body, &message)
 		if err != nil {

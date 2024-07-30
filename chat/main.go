@@ -1,18 +1,27 @@
 package main
 
 import (
+	"chat/repository/mq/message_broadcast"
+	"chat/repository/mq/message_store"
 	"chat/routes"
 	"common/repository/db"
 	"common/utils"
-	"github.com/gin-gonic/gin"
+	"context"
 )
 
 func main() {
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	// db初始化
 	db.InitMySQL()
 
-	// Gin 路由设置
-	r := gin.Default()
+	// MQ初始化
+	message_store.InitMq(ctx)
+	message_broadcast.InitMq()
+
+	r := routes.NewRouter()
 
 	routes.SetupWsRoutes()
 
