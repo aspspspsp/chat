@@ -2,8 +2,8 @@ package message_broadcast
 
 import (
 	"chat/api/ws"
-	"chat/repository/db/models"
 	"chat/repository/mq/message_store"
+	"common/repository/db/models"
 	"common/repository/mq"
 	"common/utils"
 	"encoding/json"

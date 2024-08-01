@@ -5,16 +5,12 @@ import (
 	"sync"
 )
 
-var roomConnMap map[string]map[*websocket.Conn]bool
+var roomConnMap map[uint]map[*websocket.Conn]bool
 var mutex sync.Mutex
 
-func Init() {
-	roomConnMap = make(map[string]map[*websocket.Conn]bool)
-}
-
-func AddConn(roomId string, wbConn *websocket.Conn) {
+func AddConn(roomId uint, wbConn *websocket.Conn) {
 	if roomConnMap == nil {
-		roomConnMap = make(map[string]map[*websocket.Conn]bool)
+		roomConnMap = make(map[uint]map[*websocket.Conn]bool)
 	}
 
 	if roomConnMap[roomId] == nil {
@@ -26,7 +22,7 @@ func AddConn(roomId string, wbConn *websocket.Conn) {
 	mutex.Unlock()
 }
 
-func GetMap() map[string]map[*websocket.Conn]bool {
+func GetMap() map[uint]map[*websocket.Conn]bool {
 	return roomConnMap
 }
 

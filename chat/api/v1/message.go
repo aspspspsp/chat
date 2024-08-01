@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"chat/services"
+	"chat/service"
 	"chat/types"
 	api "common/api/v1"
 	"github.com/CocaineCong/gin-mall/pkg/utils/ctl"
@@ -19,7 +19,7 @@ func SendMessageHandler() gin.HandlerFunc {
 			return
 		}
 
-		l := services.GetMessageSrv()
+		l := service.GetMessageSrv()
 
 		resp, err := l.SendMessage(&req)
 		if err != nil {

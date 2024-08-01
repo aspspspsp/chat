@@ -3,8 +3,10 @@ package models
 import (
 	"common/configs"
 	"common/consts"
+	"common/pb"
 	conf "github.com/CocaineCong/gin-mall/config"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"time"
 )
@@ -52,4 +54,42 @@ func (u *Member) AvatarURL() string {
 	}
 	pConfig := conf.Config.PhotoPath
 	return pConfig.PhotoHost + conf.Config.System.HttpPort + pConfig.AvatarPath + u.Avatar
+}
+
+func ConvertToProto(member *Member) *pb.Member {
+	id := int32(member.ID)
+	createdAtPb := timestamppb.New(member.CreatedAt)
+	updatedAtPb := timestamppb.New(member.UpdatedAt)
+
+	return &pb.Member{
+		Id:        id,
+		Username:  member.Username,
+		Password:  member.Password,
+		Name:      member.Name,
+		Email:     member.Email,
+		Nickname:  member.Nickname,
+		Avatar:    member.Avatar,
+		Status:    member.Status,
+		CreateAt:  createdAtPb,
+		UpdatedAt: updatedAtPb,
+	}
+}
+
+func ConvertFromProto(pMember *pb.Member) (Member, error) {
+	id := uint(pMember.Id)
+	createAt := pMember.CreateAt.AsTime()
+	updatedAt := pMember.UpdatedAt.AsTime()
+
+	return Member{
+		ID:        id,
+		Username:  pMember.Username,
+		Password:  pMember.Password,
+		Name:      pMember.Name,
+		Email:     pMember.Email,
+		Nickname:  pMember.Nickname,
+		Avatar:    pMember.Avatar,
+		Status:    pMember.Status,
+		CreatedAt: createAt,
+		UpdatedAt: updatedAt,
+	}, nil
 }

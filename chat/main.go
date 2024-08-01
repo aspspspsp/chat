@@ -3,7 +3,7 @@ package main
 import (
 	"chat/repository/mq/message_broadcast"
 	"chat/repository/mq/message_store"
-	"chat/routes"
+	"chat/route"
 	"common/repository/db"
 	"common/utils"
 	"context"
@@ -21,9 +21,9 @@ func main() {
 	message_store.InitMq(ctx)
 	message_broadcast.InitMq()
 
-	routes.SetupWsRoutes()
+	route.SetupWsRoutes()
 
-	r := routes.NewRouter()
+	r := route.NewRouter()
 
 	// 启动 HTTP 服务
 	err := r.Run(":8080")

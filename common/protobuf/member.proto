@@ -1,0 +1,33 @@
+// greeter.proto
+syntax = "proto3";
+
+package protobuf;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "../pb;pb";
+
+message Member {
+  int32 id = 10; // 會員ID
+  string username = 20;
+  string password = 30;
+  string name = 40;
+  string email = 50;
+  string nickname = 60;
+  string avatar = 70;
+  string status = 80;
+  google.protobuf.Timestamp createAt = 90;
+  google.protobuf.Timestamp updatedAt = 100;
+}
+
+message GetMemberResponse {
+  Member member = 1;
+}
+
+message GetMemberRequest {
+  int32 id = 1;
+}
+
+service MemberService {
+  rpc GetMember (GetMemberRequest) returns (GetMemberResponse);
+}

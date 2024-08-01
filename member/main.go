@@ -9,9 +9,9 @@ import (
 	"context"
 	"google.golang.org/grpc"
 	"log"
-	"member/handlers"
 	"member/inits"
 	"member/routes"
+	"member/server"
 	"time"
 )
 
@@ -32,7 +32,11 @@ func main() {
 	// GRPC 註冊
 	registerServices := []rpc.RegisterServiceFunc{
 		func(s *grpc.Server) {
-			pb.RegisterGreeterServer(s, &handlers.Server{})
+			pb.RegisterGreeterServer(s, &server.Server{})
+		},
+		// 會員GRPC server
+		func(s *grpc.Server) {
+			pb.RegisterMemberServiceServer(s, &server.MemberServer{})
 		},
 	}
 	inits.GrpcInit(registerServices)
@@ -56,7 +60,7 @@ func main() {
 	log.Println(helloReply)
 
 	// 启动 HTTP 服务
-	err = r.Run(":8080")
+	err = r.Run(":8081")
 	if err != nil {
 		utils.FailOnError(err, "member服務啟動失敗")
 		return

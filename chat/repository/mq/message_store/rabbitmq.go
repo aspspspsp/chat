@@ -2,7 +2,7 @@ package message_store
 
 import (
 	"chat/repository/db/dao"
-	"chat/repository/db/models"
+	"common/repository/db/models"
 	"common/repository/mq"
 	"common/utils"
 	"context"
@@ -13,7 +13,11 @@ import (
 
 const queueName = "messageStore"
 
+var messageDao *dao.MessageDao
+
 func InitMq(ctx context.Context) {
+	// 创建 MessageDao 实例
+	messageDao = dao.NewMessageDao(ctx)
 
 	conn := mq.ConnectRabbitMQ()
 	ch := mq.CreateChannel(conn)
@@ -73,9 +77,6 @@ func consumeMessages(ch *amqp.Channel) <-chan amqp.Delivery {
 }
 
 func handleMessages(ctx context.Context, msgs <-chan amqp.Delivery, done chan bool) {
-	// 创建 MessageDao 实例
-	messageDao := dao.NewMessageDao(ctx)
-
 	for d := range msgs {
 		body := d.Body
 		log.Printf("Received a message(非廣播): %s", body)

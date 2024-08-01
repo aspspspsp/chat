@@ -3,12 +3,12 @@ package services
 import (
 	"common/configs"
 	"common/consts"
+	"common/repository/db/models"
 	"context"
 	"errors"
 	"github.com/CocaineCong/gin-mall/pkg/utils/jwt"
 	"log"
 	"member/repository/db/dao"
-	"member/repository/db/models"
 	"member/types"
 	"sync"
 )

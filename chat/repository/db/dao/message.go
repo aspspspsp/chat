@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"chat/repository/db/models"
 	"common/repository/db"
+	"common/repository/db/models"
 	"context"
 	"gorm.io/gorm"
 )

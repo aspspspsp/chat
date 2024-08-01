@@ -1,4 +1,4 @@
-package routes
+package route
 
 import (
 	api "chat/api/v1"
@@ -13,6 +13,8 @@ func NewRouter() *gin.Engine {
 	v1 := r.Group("api/v1")
 	{
 		v1.POST("sendMessage", api.SendMessageHandler())
+		v1.POST("addToRoom", api.AddToRoomHandler())
+		v1.DELETE("removeToRoom", api.RemoveToRoomHandler())
 		v1.GET("test", api.TestHandler())
 	}
 	//

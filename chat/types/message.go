@@ -1,5 +1,6 @@
 package types
 
 type SendMessageReq struct {
-	Content string `form:"content"  json:"content"`
+	RoomId  uint   `form:"roomId"  json:"roomId" :"content"`
+	Content string `form:"content"  json:"content" :"content"`
 }

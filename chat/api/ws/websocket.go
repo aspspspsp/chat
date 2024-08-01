@@ -2,10 +2,12 @@ package ws
 
 import (
 	"chat/inits/memory"
-	"chat/repository/db/models"
+	"common/repository/db/models"
+	"encoding/json"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var upgrader = websocket.Upgrader{
@@ -26,10 +28,18 @@ func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	//defer conn.Close()
 
 	// 从查询参数中获取聊天室名称
-	roomId := r.URL.Query().Get("roomId")
-	if roomId == "" {
+	_roomId := r.URL.Query().Get("roomId")
+	if _roomId == "" {
 		log.Println("No room specified")
 	}
+
+	// 将 roomId 转换为整数
+	roomId, err := strconv.Atoi(_roomId)
+	if err != nil {
+		http.Error(w, "Invalid roomId", http.StatusBadRequest)
+		return
+	}
+
 	err = conn.WriteMessage(1, []byte("歡迎光臨聊天室"))
 
 	if err != nil {
@@ -37,9 +47,7 @@ func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("roomId:" + roomId)
-
-	memory.AddConn(roomId, conn)
+	memory.AddConn(uint(roomId), conn)
 
 	for {
 		// 读取消息
@@ -59,12 +67,13 @@ func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func BroadcastMessage(message models.Message) {
-	roomId := "test"
-	content := message.Content
+	roomId := message.RoomId
+	log.Println("roomId:" + strconv.Itoa(int(roomId)))
+	body, _ := json.Marshal(message)
 
 	for c := range memory.GetMap()[roomId] {
 
-		if err := c.WriteMessage(1, []byte(content)); err != nil {
+		if err := c.WriteMessage(1, []byte(body)); err != nil {
 			log.Println("Error writing message to user:", err)
 			//c.Close()
 			//delete(chatRooms[room], c)

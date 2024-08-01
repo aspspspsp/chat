@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"chat/repository/db/models"
 	"common/repository/db"
+	"common/repository/db/models"
 	"context"
 	"gorm.io/gorm"
 )
@@ -31,4 +31,10 @@ func (dao *RoomMemberDao) UpdateById(id uint, roomMember *models.RoomMember) (er
 // Create 创建訊息
 func (dao *RoomMemberDao) Create(roomMember *models.RoomMember) error {
 	return dao.DB.Model(&models.RoomMember{}).Create(&roomMember).Error
+}
+
+// DeleteByRoomIdMemberId 刪除
+func (dao *RoomMemberDao) DeleteByRoomIdMemberId(roomId uint, memberId uint) error {
+	return dao.DB.Where("room_id = ? AND member_id = ?", roomId, memberId).Delete(&models.RoomMember{}).Error
+
 }

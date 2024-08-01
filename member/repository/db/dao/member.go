@@ -2,9 +2,9 @@ package dao
 
 import (
 	"common/repository/db"
+	"common/repository/db/models"
 	"context"
 	"gorm.io/gorm"
-	"member/repository/db/models"
 )
 
 type MemberDao struct {

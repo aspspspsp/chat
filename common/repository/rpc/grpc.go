@@ -26,7 +26,7 @@ func DiscoverServiceWithConsul() (string, error) {
 	}
 
 	if len(services) == 0 {
-		return "", fmt.Errorf("no healthy instances of services found")
+		return "", fmt.Errorf("no healthy instances of service found")
 	}
 
 	service := services[0]
