@@ -10,6 +10,48 @@ import (
 	"net/http"
 )
 
+func CreateHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var req types.CreateRoomReq
+		if err := ctx.ShouldBind(&req); err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusOK, api.ErrorResponse(ctx, err))
+			return
+		}
+
+		l := service.GetRoomSrv()
+
+		l.Create(ctx.Request.Context(), &req)
+		//if err != nil {
+		//	log.Println(err)
+		//	ctx.JSON(http.StatusOK, api.ErrorResponse(ctx, err))
+		//	return
+		//}
+		ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, nil))
+	}
+}
+
+func DeleteHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var req types.DeleteRoomReq
+		if err := ctx.ShouldBind(&req); err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusOK, api.ErrorResponse(ctx, err))
+			return
+		}
+
+		l := service.GetRoomSrv()
+
+		l.Delete(ctx.Request.Context(), &req)
+		//if err != nil {
+		//	log.Println(err)
+		//	ctx.JSON(http.StatusOK, api.ErrorResponse(ctx, err))
+		//	return
+		//}
+		ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, nil))
+	}
+}
+
 func AddToRoomHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req types.AddToRoomReq
@@ -19,7 +61,7 @@ func AddToRoomHandler() gin.HandlerFunc {
 			return
 		}
 
-		l := service.GetMessageSrv()
+		l := service.GetRoomSrv()
 
 		l.AddMember(ctx.Request.Context(), &req)
 		//if err != nil {
@@ -40,7 +82,7 @@ func RemoveToRoomHandler() gin.HandlerFunc {
 			return
 		}
 
-		l := service.GetMessageSrv()
+		l := service.GetRoomSrv()
 
 		l.RemoveMember(ctx.Request.Context(), &req)
 		//if err != nil {

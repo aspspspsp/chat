@@ -55,6 +55,6 @@ package controllers
 //		return
 //	}
 //
-//	db.DB.Delete(&member)
+//	db.DB.DeleteById(&member)
 //	c.JSON(http.StatusOK, gin.H{"message": "Member deleted"})
 //}

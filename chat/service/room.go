@@ -26,7 +26,25 @@ func GetRoomSrv() *RoomSrv {
 	return RoomSrvIns
 }
 
-func (s *MessageSrv) AddMember(ctx context.Context, req *types.AddToRoomReq) {
+func (s *RoomSrv) Create(ctx context.Context, req *types.CreateRoomReq) {
+	name := req.Name
+
+	room := models.Room{
+		Name: name,
+	}
+
+	_ = dao.NewRoomDao(ctx).Create(&room)
+}
+
+func (s *RoomSrv) Delete(ctx context.Context, req *types.DeleteRoomReq) {
+	id := req.Id
+	err := dao.NewRoomDao(ctx).DeleteById(id)
+	if err != nil {
+		return
+	}
+}
+
+func (s *RoomSrv) AddMember(ctx context.Context, req *types.AddToRoomReq) {
 	roomId := req.RoomId
 	memberId := req.MemberId
 
@@ -52,7 +70,7 @@ func (s *MessageSrv) AddMember(ctx context.Context, req *types.AddToRoomReq) {
 	}
 }
 
-func (s *MessageSrv) RemoveMember(ctx context.Context, req *types.RemoveToRoomReq) {
+func (s *RoomSrv) RemoveMember(ctx context.Context, req *types.RemoveToRoomReq) {
 	roomId := req.RoomId
 	memberId := req.MemberId
 
@@ -74,7 +92,7 @@ func (s *MessageSrv) RemoveMember(ctx context.Context, req *types.RemoveToRoomRe
 	}
 }
 
-func (s *MessageSrv) ListRoomMembers(roomId uint) {
+func (s *RoomSrv) ListRoomMembers(roomId uint) {
 	//room := roomDao.Get(roomId)
 	//if room == nil {
 	//	return
@@ -82,7 +100,7 @@ func (s *MessageSrv) ListRoomMembers(roomId uint) {
 
 }
 
-func (s *MessageSrv) CreateRoom(ctx context.Context, roomName string, ownerId uint) {
+func (s *RoomSrv) CreateRoom(ctx context.Context, roomName string, ownerId uint) {
 	room := models.Room{
 		OwnerId: ownerId,
 		Name:    roomName,
@@ -94,12 +112,15 @@ func (s *MessageSrv) CreateRoom(ctx context.Context, roomName string, ownerId ui
 	}
 }
 
-func (s *MessageSrv) RemoveRoom(ctx context.Context, roomId uint) {
+func (s *RoomSrv) RemoveRoom(ctx context.Context, roomId uint) {
 	roomDao := dao.NewRoomDao(ctx)
 	room, _ := roomDao.GetById(roomId)
 	if room == nil {
 		return
 	}
 
-	roomDao.Delete(roomId)
+	err := roomDao.DeleteById(roomId)
+	if err != nil {
+		return
+	}
 }

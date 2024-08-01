@@ -6,13 +6,10 @@ import (
 	"common/repository/db"
 	"common/repository/rpc"
 	"common/utils"
-	"context"
 	"google.golang.org/grpc"
-	"log"
 	"member/inits"
 	"member/routes"
 	"member/server"
-	"time"
 )
 
 func main() {
@@ -41,26 +38,8 @@ func main() {
 	}
 	inits.GrpcInit(registerServices)
 
-	// grpc 調用
-	serviceAddress, err := rpc.DiscoverServiceWithConsul()
-	if err != nil {
-		log.Fatalf("did not connect1: %v", err)
-	}
-	maxRetries := 3
-	retryInterval := 2 * time.Second
-	result, err := rpc.CallGRPCService(serviceAddress, func(ctx context.Context, conn *grpc.ClientConn) (interface{}, error) {
-		client := pb.NewGreeterClient(conn)
-		return client.SayHello(ctx, &pb.HelloRequest{Name: "world"})
-	}, maxRetries, retryInterval)
-
-	helloReply, ok := result.(*pb.HelloReply)
-	if !ok {
-		log.Fatalf("Unexpected response types: %T", result)
-	}
-	log.Println(helloReply)
-
 	// 启动 HTTP 服务
-	err = r.Run(":8081")
+	err := r.Run(":8081")
 	if err != nil {
 		utils.FailOnError(err, "member服務啟動失敗")
 		return

@@ -12,9 +12,17 @@ func NewRouter() *gin.Engine {
 	r := gin.Default()
 	v1 := r.Group("api/v1")
 	{
-		v1.POST("sendMessage", api.SendMessageHandler())
-		v1.POST("addToRoom", api.AddToRoomHandler())
-		v1.DELETE("removeToRoom", api.RemoveToRoomHandler())
+		chat := v1.Group("message")
+		{
+			chat.POST("send", api.SendMessageHandler())
+		}
+		room := v1.Group("room")
+		{
+			room.POST("create", api.CreateHandler())
+			room.POST("addMember", api.AddToRoomHandler())
+			room.DELETE("removeMember", api.RemoveToRoomHandler())
+		}
+
 		v1.GET("test", api.TestHandler())
 	}
 	//

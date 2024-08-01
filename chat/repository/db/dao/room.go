@@ -2,7 +2,7 @@ package dao
 
 import (
 	"common/repository/db"
-	models2 "common/repository/db/models"
+	"common/repository/db/models"
 	"context"
 	"gorm.io/gorm"
 )
@@ -20,19 +20,23 @@ func NewRoomDaoByDB(db *gorm.DB) *RoomDao {
 }
 
 // GetById 根据 id 获取
-func (dao *RoomDao) GetById(id uint) (room *models2.Room, err error) {
-	err = dao.DB.Model(&models2.RoomMember{}).Where("id=?", id).
+func (dao *RoomDao) GetById(id uint) (room *models.Room, err error) {
+	err = dao.DB.Model(&models.RoomMember{}).Where("id=?", id).
 		First(&room).Error
 	return
 }
 
 // UpdateById 根据 id 更新
-func (dao *RoomDao) UpdateById(id uint, room *models2.Room) (err error) {
-	return dao.DB.Model(&models2.Room{}).Where("id=?", id).
+func (dao *RoomDao) UpdateById(id uint, room *models.Room) (err error) {
+	return dao.DB.Model(&models.Room{}).Where("id=?", id).
 		Updates(&room).Error
 }
 
 // Create 创建訊息
-func (dao *RoomDao) Create(room *models2.Room) error {
-	return dao.DB.Model(&models2.Room{}).Create(&room).Error
+func (dao *RoomDao) Create(room *models.Room) error {
+	return dao.DB.Model(&models.Room{}).Create(&room).Error
+}
+
+func (dao *RoomDao) DeleteById(id uint) error {
+	return dao.DB.Where("id = ?", id).Delete(&models.RoomMember{}).Error
 }
