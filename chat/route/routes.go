@@ -19,15 +19,16 @@ func NewRouter() *gin.Engine {
 		room := v1.Group("room")
 		{
 			room.POST("create", api.CreateHandler())
-			room.POST("addMember", api.AddToRoomHandler())
-			room.DELETE("removeMember", api.RemoveToRoomHandler())
+			room.DELETE("delete", api.DeleteHandler())
+			member := room.Group("member")
+			{
+				member.POST("add", api.AddToRoomHandler())
+				member.DELETE("delete", api.RemoveToRoomHandler())
+			}
 		}
 
 		v1.GET("test", api.TestHandler())
 	}
-	//
-	//r.POST("/addUserToChatRoom", controllers.AddMemberToChatroom)
-	//r.POST("/removeUserFromChatRoom", controllers.RemoveUserFromChatRoom)
 
 	return r
 }
